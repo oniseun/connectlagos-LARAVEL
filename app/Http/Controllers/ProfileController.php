@@ -12,7 +12,7 @@ class ProfileController extends Controller
 
     }
     
-    public function miniStats(){
+    public function ajahMiniStats(){
     
     
     
