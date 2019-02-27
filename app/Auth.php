@@ -3,194 +3,211 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Mail\Fastmail;
 
 class Auth extends Model
 {
+    public static $loginFormFillable = ['email','password'];
+    public static $registerUserFillable = ['email', 'fullname', 'phone','confirm_password','password', 'gender', 'date_of_birth' ];
+    public static $resetPasswordFillable =['email','reset_code'];
+    public static $resetLinkFillable =['email'];
+    // login_id
     
+        public static function check()
+        {
+    
+            if (\Request::session()->has('cl_user_id') && \Request::session()->has('cl_access_token')) {
+    
+                $db_check = \DB::table('cl_members')->where('ID', session('cl_user_id'))
+                    ->where('access_token', session('cl_access_token'))
+                    ->exists();
+    
+                if ($db_check) // check if session data is in database
+                {
+                    return true;
+                } else {
+                    self::logout(); // logout false session
+                    return false;
+                }
+            } else
+    
+                return false;
+    
+        }
+        public static function attempt($email, $password)
+        {
+    
+            if (self::email_exist($email)) {
+                $user_password = self::get_password($email);
+                return \Hash::check($password, $user_password) ? true : false;
+            } else
+                return false;
+    
+        }
+    
+        public static function login_user()
+        {
+            $data = \Request::only(self::$loginFormFillable);
+    
+            if(self::attempt($data['email'],$data['password']))
+            {
+                self::create_session($data['email']);
+                return true;
+                
+            }
+            else {
+                return false;
+            }
+        }
+    
+        public static function id()
+        {
+            return session('cl_user_id');
+    
+        }
 
-// get_token
-private function get_token($email)
-{
+        // logout
+  
+    public static function currentUser()
+    {
+       return  \DB::table('cl_members')->where('ID', self::id())->first();
+    }
 
-    return $this->query_single_data("SELECT access_token FROM cl_members WHERE email ='$email' LIMIT 1")['access_token'];
+    public static function getInfoByEmail($email)
+    {
+        return \DB::table('cl_members')->where('email', $email)->first();
+    }
 
-}
+   
 
+    public static function create_session($email)
+    {
 
-// get_id
-private function get_uid($email)
-{
+        $user_info = self::getInfoByEmail($email);
 
-           return $this->query_single_data("SELECT id FROM cl_members WHERE email ='$email' LIMIT 1")['id'];
+        session([
+            'cl_user_id' => $user_info->ID,
+            'cl_access_token' => $user_info->access_token
+        ]);
 
+    }
 
-}
+    public static function get_password($email)
+    {
 
+        return \DB::table('cl_members')->where('email', $email)->value('password');
 
-// login_user
-public function login_user($email,$remember = 'yes')
-{
-  $uid = $this->get_uid($email);
-  $token = $this->get_token($email);
-  $rm = $remember === 'yes' ? (60 * 60 * 24 * 30) : false;
-  set_cookie('cl_user_id', $uid, $rm);
-  set_cookie('cl_access_token', $token, $rm);
+    }
 
-  $this->insert(
-    [
-      'user_id' => $uid,
-      'activity' => 'Logged into the platform with email  '.$email. 'on UNIX:'.time().'/'.date("d m Y h:i:s"),
-      'ip'=>viewer_details()['ip'],
-      'ua' =>$this->escape_string(viewer_details()['ua'])
+    public static function email_exist($email)
+    {
 
-    ],'cl_member_activity');
+        return \DB::table('cl_members')->where('email', $email)->exists();
 
+    }
 
-}
+    public static function logout()
+    {
 
+        \Request::session()->forget('cl_user_id');
+        \Request::session()->forget('cl_access_token');
+        
+        // $tm->create_activity("Logged out of the platform");
 
-// logout_user
-public function logout_user()
-{
-  $tm= new Transport_Manager;
-  $tm->create_activity("Logged out of the platform");
-  delete_cookie('cl_access_token','cl_user_id');
-  return true;
+    }
 
-}
 
 
 // verify_email
-public function verify_email($email)
+public static function verify_email($email)
 {
-
-           return $this->query_data("UPDATE cl_members SET email_verified = 'yes' WHERE email = '$email'");
-
+    return \DB::table('cl_members')->where('email',$email)->update(['email_verified' => 'yes']) ;
 
 }
 
 
 // register_user
-public function register_user($data)
+public static function register_user()
 {
+    
+    $data = \Request::only(self::$registerUserFillable);
 
-  extract($this->clean_post($data));
-    $insert = $this->insert(
-      [
-        'email' => $email,
-        'loginid' => create_url($fullname),
-        'fullname'=>$fullname,
-        'phone'=>$phone,
-        'password' => md5($confirm_password),
-        'gender' => $gender,
-        'date_of_birth' =>$this->now($date_of_birth),
-        'access_token' =>uniqid().strrev(uniqid())
+        
+      $data['loginid'] = str_slug($data['fullname']);
+      $data['password'] = bcrypt($data['confirm_password']);
+      $data['date_of_birth'] = mysql_timestamp($data['date_of_birth']);
+      $data['access_token'] = md5(uniqid().microtime().strrev(uniqid()));
 
-      ],'cl_members' );
+      unset($data['confirm_password']);
 
-      if($insert)
-      {
-        $this->insert(
-          [
-            'user_id' => $this->get_id(),
-            'activity' => 'Newly registered on the platform with email '.$email.' on UNIX:'.time().'/'.date("d m Y h:i:s"),
-            'ip'=>viewer_details()['ip'],
-            'ua' =>$this->escape_string(viewer_details()['ua'])
+      return \DB::table('cl_members')->insert($data);
 
-          ],'cl_member_activity');
-        $this->login_user($email);
+      //'activity' => 'Newly registered on the platform with email '.$email.' on UNIX:'.time().'/'.date("d m Y h:i:s"),
+      // self::create_session($data['email'])
 
-        return true;
-
-      }
-      if($insert)
-      {
-        return false;
-
-      }
-
-
-
-
+    
 }
 
 
 // send_reset_link
-public function send_reset_link($data)
+public static function send_reset_link()
 {
-extract($this->clean_post($data));
-
-$reset_code = strrev(uniqid()).str_shuffle(uniqid());
-return $this->insert(
-  [
-    'email' => $email,
-    'code' =>$reset_code,
-    'code_expiry' => $this->now(date("d, D F Y",(time() + 86400)))
-
-  ],'cl_password_reset' );
+$data = \Request::only(self::$resetLinkFillable);
+$data['reset_code'] = strrev(uniqid()).str_shuffle(uniqid());
+$data['code_expiry'] = mysql_timestamp(date("d, D F Y",(time() + 86400)));
 
 
-require '../mailer/PHPMailerAutoload.php';
+return  \DB::table('cl_members' )->where('email',$data['email'])->update($data);
 
-extract($_POST);
-
-$from = 'password-reset@connectlagos.com.ng';
-$from_label = 'connectlagos.com.ng';
-//Create a new PHPMailer instance
-$mail = new PHPMailer;
-//Set who the message is to be sent from
-$mail->setFrom($from, $from_label );
-//Set who the message is to be sent to
-
-
-//send the message, check for errors
-  $data = "
-  <html>
-  <head>
-
-  </head>
-  <body>
-  <h3>Please click on the below link to reset your password </h3
-
-  <p><hr></p>
-
-  <p><a href=\"reset-password.php?code=$reset_code\"> reset-password.php?code=$reset_code</a></p>
-
-  <p><hr></p>
-
-  <p><i>This message was sent on <b>".date("D, d M Y")."</b> - please ignore if you did not initiate this message </i></p>
-
-
-  </body>
-  </html>
-
-  ";
-  $to =     $email;
-  $mail->addReplyTo($from, $from);
-
-  $subject = 'Reset your password';
-  $content = $data;// $_POST['content'];
-
-  $mail->addAddress($to,$to);
-  $mail->Subject = $subject;
-  $mail->msgHTML($content);
-  $mail->AltBody = strip_tags($content);
-  echo $mail->send() ? 'Message Sent': 'Message not Sent';
+// controller --> self::send_reset_mail($data['email']);
 
 }
 
 
 // reset_password
-public function reset_password ($data)
+public static function reset_password($data)
 {
+    $data = \Request::only(self::$resetPasswordFillable);
 
-  extract($this->clean_post($data));
-    return $this->update(
-      [
-        'password' => md5($new_password)
-        ],
-      [ 'email'=> $email],'cl_members' );
+  \DB::table('cl_members')
+  ->where('email',$data['email'])
+  ->where('reset_code',$data['reset_code'])
+  ->where('reset_code_expiry','>',now())
+  ->update(['password' => bcrypt($data['confirm_password'])]);
+    
 
 
 }
+
+public static function send_reset_mail($email)
+{
+	
+   		$userInfo = self::getInfoByEmail($email);
+   		$subject = 'Reset your password - Connect Lagos';
+
+   		self::send_fast_mail($subject,$email,compact('userInfo'),'email.reset-code','email.reset-code');
+}
+
+
+
+public static function send_fast_mail($subject,$to,$data,$view ,$plain_view = NULL)
+{
+
+	return \Mail::to($to)->send(new \App\Mail\FastMail($subject,$data,$view,$plain_view));
+
+}
+
+
+
+public static function reset_email_match($email,$reset_code) 
+{
+
+	return \DB::table('cl_members')->where('email',$email)
+							->where('reset_code',$reset_code)
+							->where('reset_code_expiry','>',now())
+							->exists();
+
+}
+
+
 }
