@@ -21,6 +21,16 @@ Route::get('register', 'AuthController@registerForm');
 Route::post('finalize/register', 'AuthController@register');
 Route::get('login', 'AuthController@loginForm');
 Route::get('finalize/login', 'AuthController@login');
+Route::get('functions', function(){
+$f = ['dashboard','miniStats','profileForms','updateInfo','updatePassword','updatePhoto'];
+foreach($f as $fc):
+echo "public function $fc".'(){';
+echo str_repeat('<br>',4);
+echo '}';
+echo str_repeat('<br>',2);
+endforeach;
+
+});
 
 
 
@@ -32,7 +42,7 @@ Route::group(['prefix' => 'admin'], function () {//, 'middleware' => 'web.auth'
 
 
 Route::get('dashboard', 'ProfileController@dashboard');
-Route::get('stats', 'ProfileController@miniStats');
+Route::get('stats', 'ProfileController@ajaxMiniStats');
 
 Route::get('activities/list', 'ActivityController@listView');
 Route::get('activities/ajax/list', 'ActivityController@ajaxList');

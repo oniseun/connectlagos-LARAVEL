@@ -77,7 +77,6 @@ class Auth extends Model
     {
         return \DB::table('cl_members')->where('email', $email)->first();
     }
-
    
 
     public static function create_session($email)

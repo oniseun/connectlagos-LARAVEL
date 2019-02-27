@@ -50,8 +50,6 @@ public static function next_activity($userID, $from_time, $limit = 50)
                 ->limit($limit)
                 ->get();
 
-
-
 }
 
 
