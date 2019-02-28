@@ -35,7 +35,12 @@ class CardController extends Controller
     
     
     }
+    public function add(){
     
+    
+    
+    }
+
     public function fund(){
     
     
