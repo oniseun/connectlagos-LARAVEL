@@ -8,9 +8,9 @@ class Wallet extends Model
 {
     
 public static $fundDebitWalletFillable = ['amount' ,'trans_ref' ];
-public static $searchWalletTransactionFillable = ['search_string'];
+public static $searchWalletTransactionFillable = ['q'];
 // 7.) wallet_balance
-public static function wallet_balance($userID)
+public static function balance($userID)
 {
     return \DB::select("SELECT
 
@@ -27,7 +27,7 @@ public static function verify_trans($transref,$amount)
            return true;
 }
 
-public static function wallet_trans($userID,$limit =50)
+public static function transactions($userID,$limit =50)
 {
     return \DB::table('cl_wallet_transactions')
                 ->where('user_id',$userID)
@@ -37,7 +37,7 @@ public static function wallet_trans($userID,$limit =50)
 
 }
 
-public static function next_wallet_trans($userID,$from_time,$limit=50)
+public static function next_transactions($userID,$from_time,$limit=50)
 {
     return \DB::table('cl_wallet_transactions')
     ->where('user_id',$userID)
@@ -98,14 +98,20 @@ public static function debit_wallet($userID,$description = 'wallet debit from pa
 
 
 // 12.) search_wallet_trans
-public static function search_wallet_trans($userID,$limit =50)
+public static function search_transactions($userID,$limit =50)
 {
-    $data = \Request::only(self::$searchWalletTransactionFillable);
-    $search_string = $data['search_string'];
-    return \DB::table('cl_member_activity')
+   
+    return \DB::table('cl_wallet_transactions')
             ->where('user_id',$userID)
-            ->whereRaw("(amount LIKE '%?%' OR description LIKE '%?%' OR trans_ref LIkE '%?%')",[$search_string,$search_string,$search_string])
-            ->orderByRaw('UNIX_TIMESTAMP(date_created)')
+            ->where(function ($query) {
+                $data = \Request::only(self::$searchWalletTransactionFillable);
+                $search_string =  '%'.$data['q'].'%';
+
+                $query->where('amount', 'like',$search_string)
+                      ->orWhere('description', 'like',$search_string)
+                      ->orWhere('trans_ref', 'like',$search_string) ;
+            })
+             ->orderByRaw('UNIX_TIMESTAMP(date_created)')
             ->limit($limit)
             ->get();
             

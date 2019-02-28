@@ -16,8 +16,8 @@
 
       <section class="panel">
           <header class="panel-heading">
-            <form action="main-view/wallet-transactions.php" method="post" class="bucket-form search-form">
-
+            <form action="/admin/search/wallet/transactions" method="post" class="bucket-form search-form">
+              @csrf
               <div class="input-group">
 
                 <span class="input-group-btn">

@@ -44,7 +44,7 @@
             </div>
             </div>
     
-            <input type="hidden" value="{{ $cardInfo->trans_ref }}" name="trans_ref" />
+            <input type="hidden" value="{{ $trans_ref }}" name="trans_ref" />
             <input type="hidden" value="{{ $cardInfo->ref_id }}" name="ref_id" />
             <div class="form-group">
             <label for="amount" class="col-sm-3 control-label">Amount</label>

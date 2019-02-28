@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Card extends Model
 {
-    public static $searchCardsFillable = ['search_string'];
+    public static $searchCardsFillable = ['q'];
     public static $addCardFillable = ['card_number','card_provider','expiry_month', 'expiry_year', 'owners_name'];
     public static $updateCardFillable = ['ref_id','card_number','card_provider','expiry_month', 'expiry_year', 'owners_name'];
     public static $removeCardFillable = ['ref_id'];
     public static $fundCardFillable = ['amount','trans_ref','ref_id'];
 
 
-public static function add_card($userID)
+public static function add($userID)
 {
 
     $data = \Request::only(self::$addCardFillable);
@@ -27,7 +27,7 @@ public static function add_card($userID)
 
 
 // 2.) card_list
-public static function card_list($userID,$limit =50)
+public static function _list($userID,$limit =50)
 {
     return \DB::table('cl_transport_cards')
     ->where('user_id',$userID)
@@ -37,7 +37,7 @@ public static function card_list($userID,$limit =50)
 
 }
 
-public static function next_cards($userID,$from_time,$limit =50)
+public static function next_list($userID,$from_time,$limit =50)
 {
     return \DB::table('cl_transport_cards')
     ->where('user_id',$userID)
@@ -49,14 +49,18 @@ public static function next_cards($userID,$from_time,$limit =50)
 }
 
 // 2.) search_cards
-public static function search_cards($userID,$limit =50)
+public static function search($userID,$limit =50)
 {
-    $data = \Request::only(self::$searchCardsFillable);
-    $search_string = $data['search_string'];
 
     return \DB::table('cl_transport_cards')
     ->where('user_id',$userID)
-    ->whereRaw("(card_number LIKE '%?%' OR card_provider LIKE '%?%')",[$search_string,$search_string])
+    ->where(function ($query) {
+        $data = \Request::only(self::$searchCardsFillable);
+        $search_string =  '%'.$data['q'].'%';
+
+        $query->where('card_number', 'like',$search_string)
+              ->orWhere('card_provider', 'like',$search_string);
+    })
     ->orderByRaw('UNIX_TIMESTAMP(date_added) DESC')
     ->limit($limit)
     ->get();
@@ -65,7 +69,7 @@ public static function search_cards($userID,$limit =50)
 
 
 // 3.) card_info
-public static function card_info($userID,$ref_id)
+public static function info($userID,$ref_id)
 {
     return \DB::table('cl_transport_cards')
     ->where('user_id',$userID)
@@ -78,7 +82,7 @@ public static function card_info($userID,$ref_id)
 
 
 // 4.) update_card
-public static function update_card($userID,$data)
+public static function _update($userID,$data)
 {
     $data = \Request::only(self::$updateCardFillable);
 
@@ -92,11 +96,11 @@ public static function update_card($userID,$data)
 
 
 // 5.) remove_card
-public static function remove_card($userID)
+public static function remove($userID,$ref_id)
 {
     $data = \Request::only(self::$removeCardFillable);
 
-    return \DB::table('cl_transport_cards')->where('user_id',$userID)->where('ref_id',$data['ref_id'])->delete();
+    return \DB::table('cl_transport_cards')->where('user_id',$userID)->where('ref_id',$ref_id)->delete();
 
 // $this->create_activity("Removed a card $card_number/$card_provider  on ".date("d/m/Y h:i:s"),  'cl_transport_cards');
   
@@ -106,7 +110,7 @@ public static function remove_card($userID)
 
 
 // 6.) fund_card
-public static function fund_card($userID)
+public static function fund($userID)
 {
     $data = \Request::only(self::$fundCardFillable);
 
@@ -129,7 +133,7 @@ public static function fund_card($userID)
 
 
 // 17.) card_trans
-public static function card_trans($userID,$limit = 50)
+public static function transactions($userID,$limit = 50)
 {
     return \DB::table('cl_card_transactions')
             ->where('user_id',$userID)
@@ -142,7 +146,7 @@ public static function card_trans($userID,$limit = 50)
 
 
 // 18.) next_card_trans
-public static function next_card_trans($userID,$from_time,$limit = 50)
+public static function next_transactions($userID,$from_time,$limit = 50)
 {
     return \DB::table('cl_card_transactions')
     ->where('user_id',$userID)
@@ -156,14 +160,18 @@ public static function next_card_trans($userID,$from_time,$limit = 50)
 
 
 // 19.) search_card_trans
-public static function search_card_trans($userID,$limit = 50)
+public static function search_transactions($userID,$limit = 50)
 {
-    $data = \Request::only(self::$searchCardsFillable);
-    $search_string = $data['search_string'];
-
     return \DB::table('cl_card_transactions')
             ->where('user_id',$userID)
-            ->whereRaw("(card_number LIKE '%?%' OR  amount LIKE '%?%' OR trans_ref LIKE '%?%')",[$search_string,$search_string,$search_string])
+            ->where(function ($query) {
+                $data = \Request::only(self::$searchCardsFillable);
+                $search_string =  '%'.$data['q'].'%';
+
+                $query->where('card_number', 'like',$search_string)
+                      ->orWhere('amount', 'like',$search_string)
+                      ->orWhere('trans_ref', 'like',$search_string) ;
+            })
             ->orderByRaw('UNIX_TIMESTAMP(date_created)')
             ->limit($limit)
             ->get();

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Site extends Model
 {
 // database_analytics
-public static function database_analytics($userID)
+public static function user_stats($userID)
 {
   return \DB::select("SELECT
 

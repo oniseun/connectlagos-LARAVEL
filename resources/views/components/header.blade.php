@@ -1,10 +1,3 @@
-<?php
-function mark_link($link,$classname = 'active')
-{
-  return preg_match("|$link|",$_SERVER['REQUEST_URI']) ? $classname : '';
-}
- ?>
-
 <div class="site-header-container container">
 
 	<div class="row">

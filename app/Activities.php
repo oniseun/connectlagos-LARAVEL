@@ -8,7 +8,7 @@ class Activities extends Model
 {
     
 
-public static $searchActivityFillable = ['search_string'];
+public static $searchActivityFillable = ['q'];
 
 public static function create_activity($userID,$description,$activity_table = NULL, $unique_id = NULL)
 {
@@ -29,7 +29,7 @@ public static function create_activity($userID,$description,$activity_table = NU
 }
 
 
-public static function activity_list($userID,$limit = 50)
+public static function _list($userID,$limit = 50)
 { 
     return \DB::table('cl_member_activity')
             ->where('user_id',$userID)
@@ -41,7 +41,7 @@ public static function activity_list($userID,$limit = 50)
 }
 
 
-public static function next_activity($userID, $from_time, $limit = 50)
+public static function next_list($userID, $from_time, $limit = 50)
 {
     return \DB::table('cl_member_activity')
                 ->where('user_id',$userID)
@@ -53,13 +53,13 @@ public static function next_activity($userID, $from_time, $limit = 50)
 }
 
 
-public static function search_activity($userID,$limit =50)
+public static function search($userID,$limit =50)
 {
         $data = \Request::only(self::$searchActivityFillable);
         
         return \DB::table('cl_member_activity')
                 ->where('user_id',$userID)
-                ->where('activity', 'like', "%{$data['search_string']}%")
+                ->where('activity', 'like', "%{$data['q']}%")
                 ->orderByRaw('UNIX_TIMESTAMP(action_date) DESC')
                 ->limit($limit)
                 ->get();

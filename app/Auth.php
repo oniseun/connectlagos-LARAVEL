@@ -62,8 +62,8 @@ class Auth extends Model
     
         public static function id()
         {
-            return session('cl_user_id');
-    
+            //return session('cl_user_id');
+            return 1;
         }
 
         // logout

@@ -10,7 +10,7 @@
         </tr>
 </thead>
 <tbody>
-        @foreach($activites as $activityInfo)
+        @foreach($activities as $activityInfo)
         <tr>
             <td>{{ $activityInfo->ref_id }}</td>
             

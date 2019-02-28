@@ -60,7 +60,7 @@
       </div>
   
       <div class="col-md-4">
-        @include('components.calenderClock')
+        @include('components.calendarClock')
   
       </div>
 

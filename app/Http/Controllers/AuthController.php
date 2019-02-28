@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Auth;
 
 class AuthController extends Controller
 {
@@ -19,8 +20,8 @@ class AuthController extends Controller
     }
 
     public function logoutForm(){
-    
-        return view('auth.logoutForm');
+        $userInfo = Auth::currentUser();
+        return view('auth.logoutForm',compact('userInfo'));
     
     }
 
