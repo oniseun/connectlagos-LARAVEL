@@ -23,6 +23,7 @@
     
             <form class="form-horizontal bucket-form" method="post" action="/admin/finalize/fund/card">
             @csrf
+            
             <div class="form-group">
             <label for="amount" class="col-sm-3 control-label">Transaction REF:</label>
             <div class="col-sm-6">

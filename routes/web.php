@@ -37,7 +37,7 @@ endforeach;
 
 
 
-Route::group(['prefix' => 'admin'], function () {//, 'middleware' => 'web.auth'
+Route::group(['prefix' => 'admin','middleware' =>'web.auth'], function () {//, 'middleware' => 'web.auth'
 
     Route::options('{any?}', function () {
         return response('', 200);
@@ -68,7 +68,7 @@ Route::post('search/cards', 'CardController@search');
 Route::get('dialogs/card/fund/{ref_id}', 'CardController@fundCardForm')->where('ref_id', '[0-9]+');
 Route::post('finalize/add/card', 'CardController@add');
 Route::post('finalize/fund/card', 'CardController@fund');
-Route::post('finalize/delete/card/{ref_id}', 'CardController@delete')->where('ref_id', '[0-9]+');
+Route::post('finalize/delete/card/{ref_id}', 'CardController@remove')->where('ref_id', '[0-9]+');
 
 
 Route::get('card/transactions/list', 'CardController@transactionListView');

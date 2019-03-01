@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Wallet extends Model
 {
     
-public static $fundDebitWalletFillable = ['amount' ,'trans_ref' ];
+public static $fundWalletFillable = ['amount' ,'trans_ref' ];
 public static $searchWalletTransactionFillable = ['q'];
 // 7.) wallet_balance
 public static function balance($userID)
 {
     return \DB::select("SELECT
 
-    ((SELECT sum(amount) from cl_wallet_transactions WHERE user_id = $userID and trans_type ='credit' ) 
-    - (SELECT sum(amount) from cl_wallet_transactions WHERE user_id = $userID and trans_type ='debit' )) AS wallet_balance
+    ((SELECT IFNULL(sum(amount),0) from cl_wallet_transactions WHERE user_id = $userID and trans_type ='credit' ) 
+    - (SELECT IFNULL(sum(amount),0) from cl_wallet_transactions WHERE user_id = $userID and trans_type ='debit' )) AS wallet_balance
    ")[0]->wallet_balance;
 
 
@@ -49,7 +49,7 @@ public static function next_transactions($userID,$from_time,$limit=50)
 
 
 // 11.) fund_wallet
-public static function fund_wallet($userID,$description = 'wallet fund from paystack')
+public static function fund($userID,$description = 'wallet fund from paystack')
 {
 
     $data = \Request::only(self::$fundWalletFillable);
@@ -63,23 +63,17 @@ public static function fund_wallet($userID,$description = 'wallet fund from pays
     return \DB::table('cl_wallet_transactions')->insert($data);
 
 
-  //if($this->verify_trans($trans_ref,$amount)):
-
-
-    
- //$this->create_activity('Funded wallet with N'.$amount.' through paystack #'.$trans_ref.' on '.date("d/m/Y h:i:s"), 'wallet_transactions',$this->get_id());
-
-    // endif;
 
 }
 
 // 11.) debit_wallet
-public static function debit_wallet($userID,$description = 'wallet debit from paystack')
+public static function debit($userID,$amount,$trans_ref,$description = 'direct wallet debit for card funding')
 {
-
-    $data = \Request::only(self::$fundWalletFillable);
+$data = [];
 
     $data['user_id'] = $userID;
+    $data['amount'] = $amount;
+    $data['trans_ref'] = $trans_ref;
     $data['description'] = $description ;
     $data['trans_type'] = 'debit';
     $data['approved'] = 'yes';
@@ -88,9 +82,6 @@ public static function debit_wallet($userID,$description = 'wallet debit from pa
     return \DB::table('cl_wallet_transactions')->insert($data);
 
 
-      //   $this->create_activity($description.' #'.$trans_ref.' on '.date("d/m/Y h:i:s"),
-      //   'wallet_transactions',$this->get_id());
-     
 
 
 

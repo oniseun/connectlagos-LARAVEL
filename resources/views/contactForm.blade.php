@@ -26,7 +26,7 @@
                     <form class="contact-form" role="form" method="post" action="/finalize/contact" enctype="application/x-www-form-urlencoded">
                         @csrf
                         <div class="form-group">
-                            <input type="text" name="name" class="form-control" placeholder="Name:" />
+                            <input type="text" name="full_name" class="form-control" placeholder="Name:" />
                         </div>
     
                         <div class="form-group">
@@ -34,7 +34,7 @@
                         </div>
     
                         <div class="form-group">
-                            <textarea class="form-control" name="message" placeholder="Message:" rows="6"></textarea>
+                            <textarea class="form-control" name="comment" placeholder="Message:" rows="6"></textarea>
                         </div>
     
                         <div class="form-group text-right">

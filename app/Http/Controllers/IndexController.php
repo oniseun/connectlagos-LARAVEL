@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Index;
 
 class IndexController extends Controller
 {
@@ -24,9 +25,18 @@ class IndexController extends Controller
     
     }
     
-    public function contact(){
-    
-    
-    
+    public function contact()
+    {
+        if(!\Request::has(Index::$contactFormFillable))
+        {
+        return back()->with('failure', "Error in your form fields, please check, make corrections and submit again");
+        exit;
+        }
+        if (Index::submit_contact_form()) {
+            return back()->with('success', "Your message has been sent!!");
+        } 
+        else {
+            return back()->with('failure', "Error in your form fields, please check, make corrections and submit again");
+        }
     }
 }

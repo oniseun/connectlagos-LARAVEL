@@ -32,7 +32,7 @@ Logout Profile - {{ $userInfo->fullname }}
                                       <i class="fa fa-power-off"></i>
                                   </div>
                                   <a href="widget.html#">
-                                      <img alt="" src="/assets-admin/uploads/{{ $userInfo->photo }}">
+                                      <img alt="" src="/{{ $userInfo->photo }}">
                                   </a>
                                   <h1>{{ $userInfo->fullname }}</h1>
                                   <p>Are you sure you want to logout?</p>
@@ -42,7 +42,7 @@ Logout Profile - {{ $userInfo->fullname }}
                       <hr>
                         <div class="form-group">
                             <div class="col-lg-offset-3 col-lg-6 text-center">
-                                <button type="submit" class="btn btn-primary btn-round ajax-submit">Logout</button>
+                                <button type="submit" class="btn btn-primary btn-round">Logout</button>
                                 <a href="/admin/dashboard" type="button" class="btn btn-default btn-round">Cancel</a>
                             </div>
                         </div>

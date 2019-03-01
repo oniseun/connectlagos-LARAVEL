@@ -8,7 +8,7 @@ use App\Mail\Fastmail;
 class Auth extends Model
 {
     public static $loginFormFillable = ['email','password'];
-    public static $registerUserFillable = ['email', 'fullname', 'phone','confirm_password','password', 'gender', 'date_of_birth' ];
+    public static $registerFormFillable = ['email', 'fullname', 'phone','confirm_password','password', 'gender', 'date_of_birth' ];
     public static $resetPasswordFillable =['email','reset_code'];
     public static $resetLinkFillable =['email'];
     // login_id
@@ -62,15 +62,14 @@ class Auth extends Model
     
         public static function id()
         {
-            //return session('cl_user_id');
-            return 1;
+            return session('cl_user_id');
         }
 
         // logout
   
     public static function currentUser()
     {
-       return  \DB::table('cl_members')->where('ID', self::id())->first();
+       return  \DB::table('cl_members')->where('id', self::id())->first();
     }
 
     public static function getInfoByEmail($email)
@@ -85,7 +84,7 @@ class Auth extends Model
         $user_info = self::getInfoByEmail($email);
 
         session([
-            'cl_user_id' => $user_info->ID,
+            'cl_user_id' => $user_info->id,
             'cl_access_token' => $user_info->access_token
         ]);
 
@@ -110,8 +109,6 @@ class Auth extends Model
 
         \Request::session()->forget('cl_user_id');
         \Request::session()->forget('cl_access_token');
-        
-        // $tm->create_activity("Logged out of the platform");
 
     }
 
@@ -129,7 +126,7 @@ public static function verify_email($email)
 public static function register_user()
 {
     
-    $data = \Request::only(self::$registerUserFillable);
+    $data = \Request::only(self::$registerFormFillable);
 
         
       $data['loginid'] = str_slug($data['fullname']);
@@ -141,9 +138,7 @@ public static function register_user()
 
       return \DB::table('cl_members')->insert($data);
 
-      //'activity' => 'Newly registered on the platform with email '.$email.' on UNIX:'.time().'/'.date("d m Y h:i:s"),
-      // self::create_session($data['email'])
-
+     
     
 }
 
@@ -153,7 +148,7 @@ public static function send_reset_link()
 {
 $data = \Request::only(self::$resetLinkFillable);
 $data['reset_code'] = strrev(uniqid()).str_shuffle(uniqid());
-$data['code_expiry'] = mysql_timestamp(date("d, D F Y",(time() + 86400)));
+$data['reset_code_expiry'] = mysql_timestamp((time() + 86400));
 
 
 return  \DB::table('cl_members' )->where('email',$data['email'])->update($data);
@@ -164,7 +159,7 @@ return  \DB::table('cl_members' )->where('email',$data['email'])->update($data);
 
 
 // reset_password
-public static function reset_password($data)
+public static function reset_password()
 {
     $data = \Request::only(self::$resetPasswordFillable);
 

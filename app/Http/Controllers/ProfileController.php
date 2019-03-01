@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Auth;
 use App\Site;
 use App\Wallet;
+use App\Profile;
+use App\Activities;
 
 
 class ProfileController extends Controller
@@ -31,20 +33,57 @@ class ProfileController extends Controller
     }
     
     public function updateInfo(){
-    
+        if (\Request::has(Profile::$updateInfoFillable) && Profile::update_info(Auth::id())) {
+
+            $successMsg = 'Updated profile information  on '.date("d/m/Y h:i:s");
+            Activities::create(Auth::id(),$successMsg, 'cl_members');
+            echo ajax_alert('success',' Profile Updated Successfully');
+        }
+        else {
+            echo ajax_alert('warning',' -- Error updating profile -- ');
+        }
     
     
     }
     
     public function updatePassword(){
-    
+        if (\Request::has(Profile::$updatePasswordFillable) ) {
+
+            extract(\Request::only(Profile::$updatePasswordFillable));
+            if($new_password !== $confirm_password)
+            {
+                echo ajax_alert('warning',' -- new and confirm password do not match-- ');
+            }
+            else
+             {  
+                 Profile::change_password(Auth::id())   ;
+                 Auth::create_session(Auth::currentUser()->email); // recreate session          
+                $successMsg = 'Updated password  on '.date("d/m/Y h:i:s");
+                
+                Activities::create(Auth::id(),$successMsg, 'cl_members');                
+
+                echo ajax_alert('success',' Password Updated Successfully');
+            }
+        }
+        else {
+            echo ajax_alert('warning',' -- Error updating password  -- ');
+        }
     
     
     }
     
     public function updatePhoto(){
     
-    
+        if (\Request::has(Profile::$updatePhotoFillable) && Profile::change_photo(Auth::id())) {
+
+            $successMsg = 'Updated Photo  on '.date("d/m/Y h:i:s");
+            Activities::create(Auth::id(),$successMsg, 'cl_members');
+            
+            echo ajax_alert('success',' Photo Updated Successfully');
+        }
+        else {
+            echo ajax_alert('warning',' -- Error updating photo -- ');
+        }
     
     }
     

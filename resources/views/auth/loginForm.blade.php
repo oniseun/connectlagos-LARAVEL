@@ -68,7 +68,7 @@
     
                         <div class="form-group ">
                             <div class="col-sm-offset-4 col-sm-8 text-left">
-                                <button type="submit" class="btn btn-success btn-lg ajax-submit">SIGN IN</button>
+                                <button type="submit" class="btn btn-success btn-lg">SIGN IN</button>
                                 <!-- <a href="reset-password.php" type="submit" class="btn btn-default btn-lg ajax-submit">FORGOT PASSWORD ?</a> -->
                             </div>
                         </div>

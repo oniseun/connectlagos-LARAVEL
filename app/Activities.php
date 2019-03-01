@@ -10,7 +10,7 @@ class Activities extends Model
 
 public static $searchActivityFillable = ['q'];
 
-public static function create_activity($userID,$description,$activity_table = NULL, $unique_id = NULL)
+public static function create($userID,$description,$activity_table = NULL, $unique_id = NULL)
 {
 
 

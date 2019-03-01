@@ -155,7 +155,7 @@ User Profile - {{ $userInfo->fullname }}
                           <div class="col-md-12" >
                               <div class="fileupload fileupload-new" data-provides="fileupload">
                                   <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
-                                      <img src="/assets-admin/uploads/{{ $userInfo->photo }}" alt="" />
+                                      <img src="/{{ $userInfo->photo }}" alt="{{ $userInfo->fullname }}" />
                                       <p>
                                         <hr>
                                       </p>

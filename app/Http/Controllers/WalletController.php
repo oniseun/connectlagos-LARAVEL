@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Wallet;
 use App\Auth;
+use App\Activities;
 
 class WalletController extends Controller
 {
@@ -26,6 +27,7 @@ class WalletController extends Controller
     
         $transactions = Wallet::transactions(Auth::id());
         return view('list.walletTransactionsAjax',compact('transactions'));
+
     
     }
 
@@ -46,7 +48,16 @@ class WalletController extends Controller
     
     public function topUp(){
     
-    
+        if (\Request::has(Wallet::$fundWalletFillable) 
+        && \Request::only(Wallet::$fundWalletFillable)['amount'] < 5001 
+            && Wallet::fund(Auth::id()) ) {
+            extract(\Request::only(Wallet::$fundWalletFillable));
+            Activities::create(Auth::id(),'Funded wallet with N'.e($amount).' through paystack #'.e($trans_ref).' on '.date("d/m/Y h:i:s"), 'wallet_transactions');
+            echo 'Wallet funded successfully!! <a href="#" type="submit" onclick="window.close()" class="btn btn-danger btn-round">Close</a>';
+        }
+        else {
+            echo 'Error occured (you can\'t fund more than 5k at once)  <a href="/admin/dialogs/wallet/topup"  class="btn btn-danger btn-round">back</a>';
+        }
     
     }
     

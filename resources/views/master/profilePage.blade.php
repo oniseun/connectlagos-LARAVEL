@@ -75,6 +75,18 @@
 
 
 <div class="row">
+  @if(session('failure'))
+    <p>
+    {!! ajax_alert('danger',session('failure')) !!}
+    </p>
+    
+@endif
+
+@if(session('success'))
+    <p>
+    {!! ajax_alert('success',session('success')) !!}
+    </p>
+@endif
 
  @yield('body')
 </div>
@@ -135,6 +147,8 @@ $(function(){
     var url = $(this).attr('delete-url');
     var msg = $(this).attr('delete-alert');
     var prt = $(this).attr('delete-parent');
+    var csrf_token = $(this).attr('csrf_token');
+    var ref_id = $(this).attr('ref_id');
     var parent = $(this).parents(prt);
     var r = confirm(msg);
 
@@ -142,9 +156,9 @@ $(function(){
           parent.remove();
 
           $.ajax({
-                  type: "GET",
+                  type: "POST",
                   url: url,
-                  data: null,
+                  data: {_token : csrf_token, ref_id : ref_id},
                   success: function(result)
                   {
                     alert('Card removed successfully');

@@ -52,7 +52,7 @@
     
                         <div class="form-group ">
                             <div class="col-sm-offset-4 col-sm-8 text-left">
-                                <button type="submit" class="btn btn-primary btn-lg ajax-submit">SEND RESET LINK</button>
+                                <button type="submit" class="btn btn-primary btn-lg">SEND RESET LINK</button>
                             </div>
                         </div>
     

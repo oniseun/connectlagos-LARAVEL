@@ -21,7 +21,6 @@ public static function add($userID)
     $data['user_id'] = $userID;
 
     return \DB::table('cl_transport_cards')->insert($data);
-//  $this->create_activity("Added a new card $card_number/$card_provider  on ".date("d/m/Y h:i:s"), 'cl_transport_cards',$this->get_id());
 
 }
 
@@ -96,14 +95,10 @@ public static function _update($userID,$data)
 
 
 // 5.) remove_card
-public static function remove($userID,$ref_id)
+public static function remove($userID)
 {
     $data = \Request::only(self::$removeCardFillable);
-
-    return \DB::table('cl_transport_cards')->where('user_id',$userID)->where('ref_id',$ref_id)->delete();
-
-// $this->create_activity("Removed a card $card_number/$card_provider  on ".date("d/m/Y h:i:s"),  'cl_transport_cards');
-  
+    return \DB::table('cl_transport_cards')->where('user_id',$userID)->where('ref_id',$data['ref_id'])->delete();
 
 
 }
@@ -114,7 +109,8 @@ public static function fund($userID)
 {
     $data = \Request::only(self::$fundCardFillable);
 
-    $cardInfo = self::card_info($userID,$data['ref_id']);
+    $cardInfo = self::info($userID,$data['ref_id']);
+    unset($data['ref_id']);
     $data['user_id'] = $userID;
     $data['card_number'] = $cardInfo->card_number ;
     $data['card_provider'] = $cardInfo->card_provider ;
@@ -123,10 +119,6 @@ public static function fund($userID)
     $data['gateway'] = 'wallet';
 
     return \DB::table('cl_card_transactions')->insert($data);
-
-
-   //  $this->debit_wallet($amount,"Card Funding of N$amount on $card_number/$card_provider",$trans_ref);
-    
 
 
 }

@@ -52,7 +52,7 @@ $userInfo = Auth::currentUser();
         <!-- user login dropdown start-->
         <li class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                <img alt="" src="/assets-admin/uploads/{{ $userInfo->photo }}">
+                <img alt="" src="/{{ $userInfo->photo }}">
                 <span class="username">{{ $userInfo->fullname }}</span>
                 <b class="caret"></b>
             </a>

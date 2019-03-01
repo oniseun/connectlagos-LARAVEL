@@ -121,7 +121,7 @@
     
                         <div class="form-group ">
                             <div class="col-sm-offset-3 col-sm-9">
-                                <button type="submit" class="btn btn-primary btn-lg ajax-submit">SIGN UP</button>
+                                <button type="submit" class="btn btn-primary btn-lg">SIGN UP</button>
                             </div>
                         </div>
                         <p class="return-message"></p>
