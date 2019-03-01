@@ -148,8 +148,7 @@ public static function send_reset_link()
 {
 $data = \Request::only(self::$resetLinkFillable);
 $data['reset_code'] = strrev(uniqid()).str_shuffle(uniqid());
-$data['reset_code_expiry'] = mysql_timestamp((time() + 86400));
-
+$data['reset_code_expiry'] = date("Y-m-d H:i:s",(time() + 86400));
 
 return  \DB::table('cl_members' )->where('email',$data['email'])->update($data);
 

@@ -39,7 +39,8 @@
     
                     <form class="form-horizontal" class="reset-on-success" action="/finalize/reset" method="post">
     
-    
+                        <p class="return-message">
+                        </p>
                         @csrf
                         <div class="form-group">
                             <label for="email" class="col-sm-4 control-label">Email address</label>
