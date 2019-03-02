@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,7 +68,11 @@
 </p>
 @endif
 
+
+
 @yield('body')
+
+
 
 @include('components.footer')
 </div>

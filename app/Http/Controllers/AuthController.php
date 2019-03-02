@@ -37,10 +37,64 @@ class AuthController extends Controller
     
     }
 
+    
+
     public function resetForm(){
         
            return view('auth.resetForm');
        
+    
+    }
+
+    public function resendVerification()
+    {
+        
+            Auth::resend_verify_link();
+            Auth::send_verification_mail(Auth::currentUser()->email);
+            return view('auth.verifyResendForm');
+
+         
+    }
+
+
+    public function verifyEmail($verify_code)
+    {
+        if(Auth::verify_code_exist($verify_code))
+        {
+            Auth::verify_email($verify_code);
+            Auth::expire_verify_code($verify_code);
+            if(Auth::check())
+            {
+                return view('auth.verifySuccessAdmin');
+            }
+            else {
+                return view('auth.verifySuccess');
+            }
+            
+        }
+        else {
+            
+
+                    if(Auth::check())
+                    {
+                        return view('404Admin');
+                    }
+                    else {
+                        return view('404');
+                    }
+        }
+    }
+
+    
+    public function resetPasswordForm($reset_code){
+    
+        if(!Auth::reset_code_expired($reset_code))
+        {
+            return view('auth.resetPasswordForm',['reset_code' => $reset_code]);
+        }
+        else {
+            return view('404');
+        }
     
     }
 
@@ -82,7 +136,9 @@ class AuthController extends Controller
             Activities::create(Auth::getInfoByEmail($email)->id,  $successMsg);
             $redirect_url = \Request::has('redirect_url') ? \Request::input('redirect_url') : '/admin/dashboard';
 
-            return redirect($redirect_url);;
+            Auth::send_verification_mail($email);
+
+            return redirect($redirect_url);
         }
         else {
             return back()->with('failure', "Email already exist or some fields are empty or passwords do not match...");
@@ -114,6 +170,29 @@ class AuthController extends Controller
         }
         else {
             echo ajax_alert('warning', "Email does not exist");
+        }
+    
+    }
+
+
+    public function resetPassword(){
+    
+        if (!\Request::has(Auth::$resetPasswordFillable)) {
+            return back()->with('failure', "Error in your form fields, please check, make corrections and submit again");
+            exit;
+        }
+
+        extract(\Request::only(Auth::$resetPasswordFillable));
+
+        if(!Auth::reset_code_expired($reset_code) && Auth::reset_email_match($email,$reset_code) && Auth::reset_password())
+        {
+            Auth::expire_reset_code($email);
+            Auth::create_session($email);
+            Activities::create(Auth::getInfoByEmail($email)->id,  'Reset Password & logged into the system on UNIX:'.time().'/'.date("d m Y h:i:s"));
+            return redirect('/admin/dashboard');
+        }
+        else {
+            return back()->with('failure', "-- Error could not reset password -- !!");
         }
     
     }

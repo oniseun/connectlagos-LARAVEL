@@ -1,8 +1,9 @@
 @extends('master.homePage')
-@section('title','Login')
+@section('title','Create New Password')
 
 @section('body')
 
+	
 	<!-- Breadcrumb -->
 	<section class="breadcrumb">
 
@@ -12,17 +13,9 @@
     
                 <div class="col-sm-12">
     
-                    <h1>Login to your account</h1>
+                    <h1>Create New Password</h1>
     
-                                <ol class="breadcrumb bc-3">
-                            <li>
-                    <a href="/home"><i class="entypo-home"></i>Home</a>
-                </li>
-                    <li class="active">
     
-                                <strong>login</strong>
-                        </li>
-                        </ol>
     
                 </div>
     
@@ -44,41 +37,43 @@
     
                     <hr>
     
-                    <form class="form-horizontal" class="reset-on-success" action="/finalize/login" method="post">
+                    <form class="form-horizontal" class="reset-on-success" action="/finalize/reset/password" method="post">
                         @csrf
-                        @if(session('redirect_url'))
-                        <input type="hidden" name="redirect_url" value="/{{ session('redirect_url') }}" />
-                        @endif
-                        <p class="return-message"></p>
+
+                        <input type="hidden" name="reset_code" value="{{ $reset_code }}" />
+                        
     
+                        <p class="return-message">
+                        </p>
                         <div class="form-group">
                             <label for="email" class="col-sm-4 control-label">Email address</label>
                             <div class="col-sm-8">
-                                <input type="email" name="email" autocomplete="off" class="form-control" id="email" placeholder="Enter email here...">
+                                <input type="email" name="email" class="form-control" id="email" placeholder="Enter email here...">
                             </div>
                         </div>
-    
+
                         <div class="form-group">
-                            <label for="password" class="col-sm-4 control-label">Password</label>
-                            <div class="col-sm-8">
-                                <input type="password" autocomplete="off" value=""class="form-control" id="password" name="password" placeholder="Enter password here...">
+                                <label class="col-sm-4 control-label" for="new_password">New Password</label>
+                                <div class="col-sm-8">
+                                    <input type="password" name="new_password" id="new_password" class="form-control round-input" placeholder="">
+                                </div>
                             </div>
-                        </div>
-                        <p  class="col-sm-offset-4 col-sm-8 text-left">
-                            Forgot password? <strong><a href="/reset" >click here</a></strong>
-                        </p>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="confirm_password">Confirm Password</label>
+                                <div class="col-sm-8">
+                                    <input type="password" name="confirm_password" id="confirm_password"  class="form-control round-input" placeholder="">
+                                </div>
+                            </div>
+    
     
     
                         <div class="form-group ">
                             <div class="col-sm-offset-4 col-sm-8 text-left">
-                                <button type="submit" class="btn btn-success btn-lg">SIGN IN</button>
-                                <!-- <a href="reset-password.php" type="submit" class="btn btn-default btn-lg ajax-submit">FORGOT PASSWORD ?</a> -->
+                                <button type="submit" class="btn btn-primary btn-lg">Change Password</button>
                             </div>
                         </div>
     
-                        <p  class="col-sm-offset-4 col-sm-8 text-left">
-                            Don't have an account yet? <strong><a href="/register" >register for a free account here</a></strong>
-                        </p>
+    
     
                     </form>
     
@@ -101,6 +96,9 @@
     
             </div>
     
+        </div>
+    
+    </section>
         </div>
     
     </section>

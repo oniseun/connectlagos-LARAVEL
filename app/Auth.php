@@ -9,7 +9,7 @@ class Auth extends Model
 {
     public static $loginFormFillable = ['email','password'];
     public static $registerFormFillable = ['email', 'fullname', 'phone','confirm_password','password', 'gender', 'date_of_birth' ];
-    public static $resetPasswordFillable =['email','reset_code'];
+    public static $resetPasswordFillable =['email','reset_code','new_password','confirm_password'];
     public static $resetLinkFillable =['email'];
     // login_id
     
@@ -115,9 +115,9 @@ class Auth extends Model
 
 
 // verify_email
-public static function verify_email($email)
+public static function verify_email($verify_code)
 {
-    return \DB::table('cl_members')->where('email',$email)->update(['email_verified' => 'yes']) ;
+    return \DB::table('cl_members')->where('verify_code',$verify_code)->update(['email_verified' => 'yes','verify_code_expiry' => now()]) ;
 
 }
 
@@ -133,6 +133,8 @@ public static function register_user()
       $data['password'] = bcrypt($data['confirm_password']);
       $data['date_of_birth'] = mysql_timestamp($data['date_of_birth']);
       $data['access_token'] = md5(uniqid().microtime().strrev(uniqid()));
+      $data['verify_code'] = md5($data['fullname'].$data['email'].time().uniqid().microtime());
+      $data['verify_code_expiry'] = date("Y-m-d H:i:s",(time() + (86400 * 30)));
 
       unset($data['confirm_password']);
 
@@ -142,12 +144,25 @@ public static function register_user()
     
 }
 
+// send_reset_link
+public static function resend_verify_link()
+{
+$data['verify_code'] = md5(self::currentuser()->fullname.self::currentuser()->email.time().uniqid().microtime());
+$data['verify_code_expiry'] = date("Y-m-d H:i:s",(time() + (86400 * 30)));
+$data['email_verified'] ='no';
+
+return  \DB::table('cl_members' )->where('email',self::currentuser()->email)->update($data);
+
+// controller --> self::send_reset_mail($data['email']);
+
+}
+
 
 // send_reset_link
 public static function send_reset_link()
 {
 $data = \Request::only(self::$resetLinkFillable);
-$data['reset_code'] = strrev(uniqid()).str_shuffle(uniqid());
+$data['reset_code'] = md5($data['email'].strrev(uniqid()).str_shuffle(uniqid()));
 $data['reset_code_expiry'] = date("Y-m-d H:i:s",(time() + 86400));
 
 return  \DB::table('cl_members' )->where('email',$data['email'])->update($data);
@@ -162,7 +177,7 @@ public static function reset_password()
 {
     $data = \Request::only(self::$resetPasswordFillable);
 
-  \DB::table('cl_members')
+  return \DB::table('cl_members')
   ->where('email',$data['email'])
   ->where('reset_code',$data['reset_code'])
   ->where('reset_code_expiry','>',now())
@@ -172,6 +187,8 @@ public static function reset_password()
 
 }
 
+
+
 public static function send_reset_mail($email)
 {
 	
@@ -179,6 +196,15 @@ public static function send_reset_mail($email)
    		$subject = 'Reset your password - Connect Lagos';
 
    		self::send_fast_mail($subject,$email,compact('userInfo'),'email.reset-code','email.reset-code');
+}
+
+public static function send_verification_mail($email)
+{
+		
+        $userInfo = self::getInfoByEmail($email);
+   		$subject = 'Verify your Email';
+
+   		self::send_fast_mail($subject,$email,compact('userInfo'),'email.verify','email.verify');
 }
 
 
@@ -199,6 +225,52 @@ public static function reset_email_match($email,$reset_code)
 							->where('reset_code',$reset_code)
 							->where('reset_code_expiry','>',now())
 							->exists();
+
+}
+
+public static function verify_code_exist($verify_code) 
+{
+
+	return \DB::table('cl_members')->where('verify_code',$verify_code)
+                                    ->where('verify_code_expiry','>',now())
+                                    ->exists();
+
+}
+
+public static function is_verified() 
+{
+
+	return \DB::table('cl_members')->where('id',self::id())
+                                    ->where('email_verified','yes')
+                                    ->exists();
+
+}
+
+public static function expire_verify_code($verify_code) 
+{
+
+	return \DB::table('cl_members')
+            ->where('verify_code',$verify_code)
+            ->update(['verify_code_expiry' => now()]);
+
+}
+
+public static function reset_code_expired($reset_code) 
+{
+
+	return \DB::table('cl_members')
+							->where('reset_code',$reset_code)
+							->where('reset_code_expiry','<',now())
+							->exists();
+
+}
+
+public static function expire_reset_code($email) 
+{
+
+	return \DB::table('cl_members')
+            ->where('email',$email)
+            ->update(['reset_code_expiry' => now()]);
 
 }
 

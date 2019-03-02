@@ -33,10 +33,20 @@ class ProfileController extends Controller
     }
     
     public function updateInfo(){
+
+        $former_email = Auth::currentUser()->email;
+
         if (\Request::has(Profile::$updateInfoFillable) && Profile::update_info(Auth::id())) {
 
             $successMsg = 'Updated profile information  on '.date("d/m/Y h:i:s");
             Activities::create(Auth::id(),$successMsg, 'cl_members');
+
+            if($former_email !== \Request::only(Profile::$updateInfoFillable)['email'] )
+            {
+                Auth::resend_verify_link();
+                Auth::send_verification_mail(Auth::currentUser()->email);
+            }
+
             echo ajax_alert('success',' Profile Updated Successfully');
         }
         else {

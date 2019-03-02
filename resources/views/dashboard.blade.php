@@ -1,4 +1,11 @@
 
+<?php
+use App\Auth;
+$verifyMsg =  'Please verify your email (check your email <strong>'.e(Auth::currentUser()->email).
+        '</strong>) or click <a href="/admin/finalize/resend/verification" target="_blank" class="btn btn-info"> Resend Link </a> to resend verifcation mail ';
+
+
+?>
 @extends('master.profilePage')
 @section('title','Dashboard')
 
@@ -17,6 +24,15 @@
         <div class="row">
   
             <!-- Transport Cards-->
+            @if(!Auth::is_verified())
+            <div class="col-md-12">
+            <p>
+            {!! ajax_alert('warning',$verifyMsg) !!}
+            <br>
+            </p>
+            </div>
+            @endif
+
             <div class="col-md-12">
               <section class="panel">
                   <header class="panel-heading">
@@ -78,8 +94,8 @@
                 $(function(){
                 
                  /* auto load all ajax containers with their url links  */
-                 xloader($data_list_link, $container_class, $loading_circle);
-                 xloader($data_list_link2, $container_class2, $loading_circle);
+                  xloader($data_list_link, $container_class, $loading_circle);
+                  xloader($data_list_link2, $container_class2, $loading_circle);
                   xloader($data_list_link3, $container_class3, $loading_circle);
                 
                  /* on click of refresh button */

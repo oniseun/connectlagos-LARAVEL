@@ -32,7 +32,7 @@ class FastMail extends Mailable
      */
     public function build()
     {
-        return $this->from('localhostfor2016@gmail.com')
+        return $this->from(env('MAIL_USERNAME'))
                     ->subject($this->subject)
                     ->view($this->view)
                     ->text($this->plain_view)

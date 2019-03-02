@@ -2,6 +2,7 @@
 use App\Auth;
 $userInfo = Auth::currentUser();
 
+
 ?>
 <header class="header fixed-top clearfix">
 <!--logo start-->

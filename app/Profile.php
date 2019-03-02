@@ -14,9 +14,9 @@ class Profile extends Model
     
 public static function update_info($userID)
 {
-
+    
     $data = \Request::only(self::$updateInfoFillable);
-    unset($data['email']); // don't allow changing of email address
+    //unset($data['email']); // don't allow changing of email address
     $data['date_of_birth'] = mysql_timestamp($data['date_of_birth']);
     $data['loginid'] = str_slug($data['loginid']);
 

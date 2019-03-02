@@ -24,6 +24,10 @@ Route::post('finalize/login', 'AuthController@login');
 Route::get('reset', 'AuthController@resetForm');
 Route::post('finalize/reset', 'AuthController@reset');
 
+Route::get('reset/password/{reset_code}', 'AuthController@resetPasswordForm')->where('reset_code', '[A-Za-z0-9_\-]+');
+Route::post('finalize/reset/password', 'AuthController@resetPassword');
+Route::get('finalize/verify/email/{verify_code}', 'AuthController@verifyEmail')->where('verify_code', '[A-Za-z0-9_\-]+');
+
 Route::get('lazy', function(){
 $f = ['dashboard','miniStats','profileForms','updateInfo','updatePassword','updatePhoto'];
 foreach($f as $fc):
@@ -85,7 +89,7 @@ Route::post('finalize/update/profile/photo', 'ProfileController@updatePhoto');
 
 Route::get('logout', 'AuthController@logoutForm');
 Route::post('finalize/logout', 'AuthController@logout');
-
+Route::get('finalize/resend/verification', 'AuthController@resendVerification');
 
 
 });
