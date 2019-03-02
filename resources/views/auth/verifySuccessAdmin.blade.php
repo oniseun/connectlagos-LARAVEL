@@ -16,9 +16,6 @@ Verification Successful
           <div class="col-lg-offset-3 col-md-6">
       
             <section class="panel">
-                <header class="panel-heading">
-                    Verification Successful
-                </header>
                 <div class="panel-body">
                     <center>
                         <h1> Verification Successful </h1>

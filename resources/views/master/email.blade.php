@@ -267,9 +267,11 @@
                   <tr>
                     <td valign="top" class="footer-cell">
                       <br>
-                      mail all enquires to <a href="mailto:info@connectlagos.com.ng" style="color:seagreen"><strong>info@connectlagos.com.ng</strong></a>
-                      <strong>&copy; Copyright {{ date("Y") }} ConnectLagos</strong><br>
-                      a property of JAYDEN RESOURCES LIMITED
+                      <center> <a href="{{ url('/') }}" style="color:seagreen"><strong>{{ url('/') }}</strong></a> 
+                        <p>
+                      <strong>&copy; Copyright {{ date("Y") }} ConnectLagos</strong>
+                        </p>
+                      </center>
                     </td>
                   </tr>
                 </table>

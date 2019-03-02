@@ -8,7 +8,7 @@ Send verification Link
 <div class="col-md-12">
         <section class="panel">
             <div class="panel-body">
-              <h2 style="padding:0; margin:0;"><b> Verify Link </b></h2>
+              <h2 style="padding:0; margin:0;"><b> Verification Link Resent </b></h2>
             </div>
         </section>
       </div>
@@ -16,9 +16,6 @@ Send verification Link
           <div class="col-lg-offset-3 col-md-6">
       
             <section class="panel">
-                <header class="panel-heading">
-                    Verification Link Resent
-                </header>
                 <div class="panel-body">
                     <center>
                         <h1> Verification Link resent </h1>
