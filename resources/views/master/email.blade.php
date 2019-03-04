@@ -210,7 +210,7 @@
                 <table cellpadding="0" cellspacing="0" class="force-full-width">
                   <tr>
                    <td height="60" valign="middle" class="header-cell">
-                    <center>  <img  style="height:35px; width:180px" src="{{ url('/assets/images/connect-lagos.png') }}" alt="logo"> </center>
+                    <center>  <img  style="height:35px; width:180px" src="{{ url('/assets-public/images/connect-lagos.png') }}" alt="logo"> </center>
                     </td>
                   </tr>
                   <tr>

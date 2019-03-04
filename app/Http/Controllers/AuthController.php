@@ -164,7 +164,7 @@ class AuthController extends Controller
     public function reset(){
     
         if (!\Request::has(Auth::$resetLinkFillable)) {
-            echo ajax_alert('warning',"Error in your form fields, please check, make corrections and submit again");
+            return back()->with('failure', "Error in your form fields, please check, make corrections and submit again");
             exit;
         }
 
@@ -173,10 +173,10 @@ class AuthController extends Controller
             $email = \Request::only(Auth::$resetLinkFillable)['email'];
             Auth::send_reset_mail($email);
 
-            echo ajax_alert('success','Reset link sent.. Check your mail!!');
+            return back()->with('success', 'Reset link sent.. Check your mail!!');
         }
         else {
-            echo ajax_alert('warning', "Email does not exist");
+            return back()->with('failure',  "Email does not exist");
         }
     
     }
