@@ -9,8 +9,8 @@ class Auth extends Model
 {
     public static $loginFormFillable = ['email','password'];
     public static $registerFormFillable = ['email', 'fullname', 'phone','confirm_password','password', 'gender', 'date_of_birth' ];
-    public static $resetPasswordFillable =['email','reset_code','new_password','confirm_password'];
-    public static $resetLinkFillable =['email'];
+    public static $resetPasswordFillable = ['email','reset_code','new_password','confirm_password'];
+    public static $resetLinkFillable = ['email'];
     // login_id
     
         public static function check()
@@ -18,7 +18,7 @@ class Auth extends Model
     
             if (\Request::session()->has('cl_user_id') && \Request::session()->has('cl_access_token')) {
     
-                $db_check = \DB::table('cl_members')->where('ID', session('cl_user_id'))
+                $db_check = \DB::table('cl_members')->where('id', session('cl_user_id'))
                     ->where('access_token', session('cl_access_token'))
                     ->exists();
     
@@ -30,8 +30,10 @@ class Auth extends Model
                     return false;
                 }
             } else
-    
+            {
+                
                 return false;
+            }
     
         }
         public static function attempt($email, $password)

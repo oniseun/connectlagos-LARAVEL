@@ -63,24 +63,25 @@ class AuthController extends Controller
         {
             Auth::verify_email($verify_code);
             Auth::expire_verify_code($verify_code);
-            if(Auth::check())
+
+            if(!Auth::check())
             {
-                return view('auth.verifySuccessAdmin');
+                return view('auth.verifySuccess'); 
             }
             else {
-                return view('auth.verifySuccess');
+                return view('auth.verifySuccessAdmin');
             }
             
         }
         else {
             
 
-                    if(Auth::check())
+                    if(!Auth::check())
                     {
-                        return view('404Admin');
+                        return view('404');
                     }
                     else {
-                        return view('404');
+                        return view('404Admin');
                     }
         }
     }
@@ -93,7 +94,13 @@ class AuthController extends Controller
             return view('auth.resetPasswordForm',['reset_code' => $reset_code]);
         }
         else {
-            return view('404');
+            if(!Auth::check())
+                    {
+                        return view('404');
+                    }
+                    else {
+                        return view('404Admin');
+                    }
         }
     
     }
