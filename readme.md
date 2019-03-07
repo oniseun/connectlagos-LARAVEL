@@ -14,6 +14,6 @@ Below is a summary of app features
 - Fund Wallet from Card
 - Activity Logging
 - Feedback Form
-- Profile Management
+- User Profile Management
 - Transaction Tracking
 
