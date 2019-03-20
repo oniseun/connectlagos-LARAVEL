@@ -28,19 +28,6 @@ Route::get('reset/password/{reset_code}', 'AuthController@resetPasswordForm')->w
 Route::post('finalize/reset/password', 'AuthController@resetPassword');
 Route::get('finalize/verify/email/{verify_code}', 'AuthController@verifyEmail')->where('verify_code', '[A-Za-z0-9_\-]+');
 
-Route::get('lazy', function(){
-$f = ['dashboard','miniStats','profileForms','updateInfo','updatePassword','updatePhoto'];
-foreach($f as $fc):
-    echo "public function $fc".'(){';
-    echo str_repeat('<br>',4);
-    echo '}';
-    echo str_repeat('<br>',2);
-endforeach;
-
-});
-
-
-
 Route::group(['prefix' => 'admin','middleware' =>'web.auth'], function () {//, 'middleware' => 'web.auth'
 
     Route::options('{any?}', function () {

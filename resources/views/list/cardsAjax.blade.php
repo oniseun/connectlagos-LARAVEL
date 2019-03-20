@@ -24,7 +24,7 @@
 
                     <td>
                         <a href="#" class="label label-default label-mini"
-                    open-dialog-url="/admin/dialogs/card/fund" dialog-height="500" dialog-width="800"><i class="fa fa-sort"></i> Fund card</a>
+                    open-dialog-url="/admin/dialogs/card/fund/{{ $cardInfo->ref_id }}" dialog-height="500" dialog-width="800"><i class="fa fa-sort"></i> Fund card</a>
                         <a href="#" csrf_token="{{ csrf_token() }}" ref_id="{{ $cardInfo->ref_id }}" delete-url="/admin/finalize/delete/card/{{ $cardInfo->ref_id }}" delete-alert="Are you sure you want to delete this card" delete-parent='tr'
                         class="label label-danger label-mini"><i class="fa fa-trash-o"></i> Delete</a>
                     </td>
