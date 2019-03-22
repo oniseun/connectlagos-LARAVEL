@@ -260,10 +260,10 @@ public static function expire_verify_code($verify_code)
 public static function reset_code_expired($reset_code) 
 {
 
-	return \DB::table('cl_members')
-							->where('reset_code',$reset_code)
-							->where('reset_code_expiry','<',now())
-							->exists();
+    $reset_code_exist =\DB::table('cl_members')->where('reset_code',$reset_code)->exists() ;
+    $reset_code_expired	= \DB::table('cl_members')->where('reset_code',$reset_code)->where('reset_code_expiry','<',now())->exists();
+
+    return !$reset_code_exist || $reset_code_expired ? true : false ;
 
 }
 
