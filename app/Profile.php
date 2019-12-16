@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Profile extends Model
 {
-    public static $updateInfoFillable = ['fullname','loginid','gender','phone','date_of_birth','about'];
+    public static $updateInfoFillable = ['fullname','loginid','gender','phone','date_of_birth','about','email'];
     public static  $updatePasswordFillable = ['new_password','confirm_password'];
     public static  $updatePhotoFillable = ['photo'];
     public static  $blockUserFillable = ['person_id'];
